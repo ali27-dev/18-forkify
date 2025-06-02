@@ -4,8 +4,8 @@ import recipeView from './recipeView.js';
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 
-import Fraction from 'fractional'; // Importing Fractional for handling fractions
-console.log(Fraction);
+// import Fraction from 'fractional'; // Importing Fraction for handling fractions
+// console.log(Fraction);
 
 const recipeContainer = document.querySelector('.recipe');
 
