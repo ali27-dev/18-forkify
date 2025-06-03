@@ -4,6 +4,8 @@ import icons from 'url:../../img/icons.svg'; // Importing icons
 class recipeView {
   _parentElement = document.querySelector('.recipe');
   #data;
+  #errorMessage = 'We could not find that recipe. Please try another one!';
+  #Message = 'Start by searching for a recipe or an ingredient. Have fun!';
 
   render(data) {
     this.#data = data;
@@ -32,12 +34,27 @@ class recipeView {
   addHandlerRender(handler) {
     ['load', 'hashchange'].forEach(ev => window.addEventListener(ev, handler));
   }
-  renderError(message = 'Something went wrong!') {
+  renderError(message = this.#errorMessage) {
     const markup = `
     <div class="error">
       <div>
         <svg>
           <use href="${icons}#icon-alert-triangle"></use>
+        </svg>
+      </div>
+      <p>${message}</p>
+    </div>
+    `;
+    this.#clear();
+    this._parentElement.insertAdjacentHTML('afterbegin', markup);
+  }
+
+  renderMessage(message = this.#Message) {
+    const markup = `
+    <div class="message">
+      <div>
+        <svg>
+          <use href="${icons}#icon-smile"></use>
         </svg>
       </div>
       <p>${message}</p>

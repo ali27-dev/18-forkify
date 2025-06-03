@@ -690,7 +690,7 @@ const controlRecipe = async function() {
         // 2) rendering recipe
         (0, _recipeViewJsDefault.default).render(_modelJs.state.recipe);
     } catch (error) {
-        alert(error);
+        (0, _recipeViewJsDefault.default).renderError();
     }
 };
 const init = function() {
@@ -1977,7 +1977,7 @@ const loadRecipe = async function(id) {
             ingredients: recipe.ingredients
         };
     } catch (err) {
-        console.error(`${err} \u{1F4A5}\u{1F4A5}\u{1F4A5}`);
+        console.err(`${err} \u{1F4A5}\u{1F4A5}\u{1F4A5}`);
         throw err; // Rethrow the error to be handled by the controller
     }
 };
@@ -2627,8 +2627,8 @@ const getJSON = async function(url) {
         const data = await res.json();
         if (!res.ok) throw new Error(`${data.message} (${res.status})`);
         return data;
-    } catch (error) {
-        throw error;
+    } catch (err) {
+        throw err;
     }
 };
 
@@ -2641,6 +2641,8 @@ var _iconsSvgDefault = parcelHelpers.interopDefault(_iconsSvg);
 class recipeView {
     _parentElement = document.querySelector('.recipe');
     #data;
+    #errorMessage = 'We could not find that recipe. Please try another one!';
+    #Message = 'Start by searching for a recipe or an ingredient. Have fun!';
     render(data) {
         this.#data = data;
         const markup = this.#generateMarkup();
@@ -2667,12 +2669,26 @@ class recipeView {
             'hashchange'
         ].forEach((ev)=>window.addEventListener(ev, handler));
     }
-    renderError(message = 'Something went wrong!') {
+    renderError(message = this.#errorMessage) {
         const markup = `
     <div class="error">
       <div>
         <svg>
           <use href="${(0, _iconsSvgDefault.default)}#icon-alert-triangle"></use>
+        </svg>
+      </div>
+      <p>${message}</p>
+    </div>
+    `;
+        this.#clear();
+        this._parentElement.insertAdjacentHTML('afterbegin', markup);
+    }
+    renderMessage(message = this.#Message) {
+        const markup = `
+    <div class="message">
+      <div>
+        <svg>
+          <use href="${(0, _iconsSvgDefault.default)}#icon-smile"></use>
         </svg>
       </div>
       <p>${message}</p>
