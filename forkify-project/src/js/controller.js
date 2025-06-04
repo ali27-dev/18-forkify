@@ -1,18 +1,12 @@
 import * as model from './model.js'; // Importing the model
 import recipeView from './views/recipeView.js';
+import searchView from './views/searchView.js';
 
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 
 // import Fraction from 'fractional'; // Importing Fraction for handling fractions
 // console.log(Fraction);
-
-const recipeContainer = document.querySelector('.recipe');
-
-// NEW API URL (instead of the one shown in the video)
-// https://forkify-api.jonas.io
-
-///////////////////////////////////////
 
 const controlRecipe = async function () {
   try {
@@ -32,7 +26,24 @@ const controlRecipe = async function () {
   }
 };
 
+const controlSearchResults = async function () {
+  try {
+    // 1) Get query from view
+    const query = searchView.getQuery();
+    if (!query) return;
+    // 2) Load search results
+
+    await model.loadSearchResults(query);
+    // 3) Render results
+    console.log(model.state.search.results);
+  } catch (error) {
+    console.error(error);
+  }
+};
+controlSearchResults();
+
 const init = function () {
   recipeView.addHandlerRender(controlRecipe);
+  searchView.addHandlerSearch(controlSearchResults);
 };
 init();
