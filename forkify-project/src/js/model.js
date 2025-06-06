@@ -1,12 +1,16 @@
 import { async } from 'regenerator-runtime'; // Importing regenerator-runtime for async/await support
-import { API_URL } from './config.js';
+import { API_URL, RES_PER_PAGE } from './config.js';
 import { getJSON } from './helpers.js';
+// import { search } from 'core-js/fn/symbol';
 
 export const state = {
   recipe: {},
   search: {
     query: '',
     results: [],
+    page: 1, // Current page of search results
+    // searchResultsPage: 1, // Current page of search results
+    resultsPerPage: RES_PER_PAGE, // Number of results per page
   },
 };
 
@@ -52,3 +56,12 @@ export const loadSearchResults = async function (query) {
 };
 
 loadSearchResults('pizza');
+
+export const getSearchResultsPage = function (page = state.search.page) {
+  state.search.page = page; // Store the current page in the state
+
+  const start = (page - 1) * state.search.resultsPerPage; // Assuming 10 results per page
+  const end = page * state.search.resultsPerPage;
+
+  return state.search.results.slice(start, end);
+};

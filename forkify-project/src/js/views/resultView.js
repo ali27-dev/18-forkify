@@ -7,11 +7,11 @@ class resultsView extends View {
   _Message = '';
 
   _generateMarkup() {
-    console.log(this._data);
     return this._data
       .map(result => this._generateMarkupPreview(result))
       .join('');
   }
+
   _generateMarkupPreview(result) {
     return `
     <li class="preview">
