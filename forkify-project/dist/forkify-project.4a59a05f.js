@@ -715,9 +715,16 @@ const controlSearchResults = async function() {
         console.error(error);
     }
 };
+const controlPagination = function(goToPage) {
+    // 1) Render NEW results
+    (0, _resultViewJsDefault.default).render(_modelJs.getSearchResultsPage(goToPage));
+    // 4) Render NEW pagination buttons
+    (0, _paginationViewJsDefault.default).render(_modelJs.state.search);
+};
 const init = function() {
     (0, _recipeViewJsDefault.default).addHandlerRender(controlRecipe);
     (0, _searchViewJsDefault.default).addHandlerSearch(controlSearchResults);
+    (0, _paginationViewJsDefault.default).addHandlerClick(controlPagination);
 };
 init();
 
@@ -2934,7 +2941,7 @@ class paginationView extends (0, _viewJsDefault.default) {
         console.log(numPages);
         // Page 1, and there are other pages
         if (curPage === 1 && numPages > 1) return ` 
-          <button class="btn--inline pagination__btn--next">
+          <button goto="${curPage + 1}" class="btn--inline pagination__btn--next">
           <svg class="search__icon">
           <use href="${0, _iconsSvgDefault.default}#icon-arrow-right"></use>
           </svg>
@@ -2943,7 +2950,7 @@ class paginationView extends (0, _viewJsDefault.default) {
       `;
         // Last page
         if (curPage === numPages && numPages > 1) return `
-         <button class="btn--inline pagination__btn--prev">
+         <button data-goto="${curPage - 1}" class="btn--inline pagination__btn--prev">
             <span>Page ${curPage - 1}</span>
             <svg class="search__icon">
               <use href="${0, _iconsSvgDefault.default}#icon-arrow-left"></use>
@@ -2952,13 +2959,13 @@ class paginationView extends (0, _viewJsDefault.default) {
       `;
         // Other page
         if (curPage < numPages) return `
-          <button class="btn--inline pagination__btn--prev">
+          <button data-goto="${curPage - 1}" class="btn--inline pagination__btn--prev">
             <span>Page ${curPage - 1}</span>
             <svg class="search__icon">
               <use href="${0, _iconsSvgDefault.default}#icon-arrow-left"></use>
             </svg>
           </button>
-          <button class="btn--inline pagination__btn--next">
+          <button data-goto="${curPage + 1}" class="btn--inline pagination__btn--next">
           <svg class="search__icon">
           <use href="${0, _iconsSvgDefault.default}#icon-arrow-right"></use>
           </svg>
@@ -2970,9 +2977,14 @@ class paginationView extends (0, _viewJsDefault.default) {
     }
     addHandlerClick(handler) {
         this._parentElement.addEventListener('click', function(e) {
-            const btn = e.target.closetest('.btn--inline');
-            console.log(btn);
-            handler();
+            const btn = e.target.closest('.btn--inline');
+            if (!btn) return;
+            // Get the page number from the button's data attribute
+            // Using dataset to get the goto value from the button
+            // Convert the string to a number
+            // Using + to convert the string to a number
+            const goToPage = +btn.dataset.goto;
+            handler(goToPage);
         });
     }
 }
