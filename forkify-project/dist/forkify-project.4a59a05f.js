@@ -676,6 +676,8 @@ var _resultViewJs = require("./views/resultView.js");
 var _resultViewJsDefault = parcelHelpers.interopDefault(_resultViewJs);
 var _searchViewJs = require("./views/searchView.js");
 var _searchViewJsDefault = parcelHelpers.interopDefault(_searchViewJs);
+var _paginationViewJs = require("./views/paginationView.js");
+var _paginationViewJsDefault = parcelHelpers.interopDefault(_paginationViewJs);
 var _runtime = require("regenerator-runtime/runtime");
 var _regeneratorRuntime = require("regenerator-runtime");
 // import Fraction from 'fractional'; // Importing Fraction for handling fractions
@@ -705,7 +707,10 @@ const controlSearchResults = async function() {
         await _modelJs.loadSearchResults(query);
         // 3) Render results
         // resultView.render(model.state.search.results);
-        (0, _resultViewJsDefault.default).render(_modelJs.getSearchResultsPage());
+        (0, _resultViewJsDefault.default).render(_modelJs.getSearchResultsPage(2));
+        // 4) Render initial pagination buttons
+        (0, _paginationViewJsDefault.default).render(_modelJs.state.search);
+    // console.log(model.state.search.results);
     } catch (error) {
         console.error(error);
     }
@@ -716,7 +721,7 @@ const init = function() {
 };
 init();
 
-},{"core-js/modules/web.immediate.js":"bzsBv","./model.js":"3QBkH","regenerator-runtime/runtime":"f6ot0","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT","./views/recipeView.js":"3wx5k","./views/resultView.js":"2iOri","./views/searchView.js":"kbE4Z","regenerator-runtime":"f6ot0"}],"bzsBv":[function(require,module,exports,__globalThis) {
+},{"core-js/modules/web.immediate.js":"bzsBv","./model.js":"3QBkH","regenerator-runtime/runtime":"f6ot0","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT","./views/recipeView.js":"3wx5k","./views/resultView.js":"2iOri","./views/searchView.js":"kbE4Z","regenerator-runtime":"f6ot0","./views/paginationView.js":"7NIiB"}],"bzsBv":[function(require,module,exports,__globalThis) {
 'use strict';
 // TODO: Remove this module from `core-js@4` since it's split to modules listed below
 require("52e9b3eefbbce1ed");
@@ -1985,7 +1990,6 @@ const state = {
         query: '',
         results: [],
         page: 1,
-        // searchResultsPage: 1, // Current page of search results
         resultsPerPage: (0, _configJs.RES_PER_PAGE)
     }
 };
@@ -2028,9 +2032,9 @@ const loadSearchResults = async function(query) {
 };
 loadSearchResults('pizza');
 const getSearchResultsPage = function(page = state.search.page) {
-    state.search.page = page; // Store the current page in the state
-    const start = (page - 1) * state.search.resultsPerPage; // Assuming 10 results per page
-    const end = page * state.search.resultsPerPage;
+    state.search.page = page;
+    const start = (page - 1) * state.search.resultsPerPage; // 0
+    const end = page * state.search.resultsPerPage; // 9
     return state.search.results.slice(start, end);
 };
 
@@ -2915,6 +2919,65 @@ class searchView {
 }
 exports.default = new searchView();
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}]},["5DuvQ","7dWZ8"], "7dWZ8", "parcelRequire3a11", {}, "./", "/")
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"7NIiB":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _viewJs = require("./View.js"); // Importing the base View class
+var _viewJsDefault = parcelHelpers.interopDefault(_viewJs);
+var _iconsSvg = require("url:../../img/icons.svg"); // Importing icons
+var _iconsSvgDefault = parcelHelpers.interopDefault(_iconsSvg);
+class paginationView extends (0, _viewJsDefault.default) {
+    _parentElement = document.querySelector('.pagination');
+    _generateMarkup() {
+        const curPage = this._data.page;
+        const numPages = Math.ceil(this._data.results.length / this._data.resultsPerPage);
+        console.log(numPages);
+        // Page 1, and there are other pages
+        if (curPage === 1 && numPages > 1) return ` 
+          <button class="btn--inline pagination__btn--next">
+          <svg class="search__icon">
+          <use href="${0, _iconsSvgDefault.default}#icon-arrow-right"></use>
+          </svg>
+          <span>Page ${curPage + 1}</span>
+          </button>
+      `;
+        // Last page
+        if (curPage === numPages && numPages > 1) return `
+         <button class="btn--inline pagination__btn--prev">
+            <span>Page ${curPage - 1}</span>
+            <svg class="search__icon">
+              <use href="${0, _iconsSvgDefault.default}#icon-arrow-left"></use>
+            </svg>
+          </button>
+      `;
+        // Other page
+        if (curPage < numPages) return `
+          <button class="btn--inline pagination__btn--prev">
+            <span>Page ${curPage - 1}</span>
+            <svg class="search__icon">
+              <use href="${0, _iconsSvgDefault.default}#icon-arrow-left"></use>
+            </svg>
+          </button>
+          <button class="btn--inline pagination__btn--next">
+          <svg class="search__icon">
+          <use href="${0, _iconsSvgDefault.default}#icon-arrow-right"></use>
+          </svg>
+          <span>Page ${curPage + 1}</span>
+          </button>
+          `;
+        // Page 1, and there are NO other pages
+        return '';
+    }
+    addHandlerClick(handler) {
+        this._parentElement.addEventListener('click', function(e) {
+            const btn = e.target.closetest('.btn--inline');
+            console.log(btn);
+            handler();
+        });
+    }
+}
+exports.default = new paginationView();
+
+},{"./View.js":"jSw21","url:../../img/icons.svg":"fd0vu","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}]},["5DuvQ","7dWZ8"], "7dWZ8", "parcelRequire3a11", {}, "./", "/")
 
 //# sourceMappingURL=forkify-project.4a59a05f.js.map
