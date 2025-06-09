@@ -691,6 +691,7 @@ const controlRecipe = async function() {
         (0, _recipeViewJsDefault.default).renderSpinner();
         // 1) loading recipe
         await _modelJs.loadRecipe(id);
+        // controlServings();
         // 2) rendering recipe
         (0, _recipeViewJsDefault.default).render(_modelJs.state.recipe);
     } catch (error) {
@@ -707,7 +708,7 @@ const controlSearchResults = async function() {
         await _modelJs.loadSearchResults(query);
         // 3) Render results
         // resultView.render(model.state.search.results);
-        (0, _resultViewJsDefault.default).render(_modelJs.getSearchResultsPage(2));
+        (0, _resultViewJsDefault.default).render(_modelJs.getSearchResultsPage());
         // 4) Render initial pagination buttons
         (0, _paginationViewJsDefault.default).render(_modelJs.state.search);
     // console.log(model.state.search.results);
@@ -721,8 +722,15 @@ const controlPagination = function(goToPage) {
     // 4) Render NEW pagination buttons
     (0, _paginationViewJsDefault.default).render(_modelJs.state.search);
 };
+const controlServings = function() {
+    // Update the recipe servings (not implemented in this example)
+    _modelJs.updateServings(8); // Example: updating servings to 2
+    // Re-render the recipe view
+    (0, _recipeViewJsDefault.default).render(_modelJs.state.recipe);
+};
 const init = function() {
     (0, _recipeViewJsDefault.default).addHandlerRender(controlRecipe);
+    (0, _recipeViewJsDefault.default).addHandlerServings(controlServings);
     (0, _searchViewJsDefault.default).addHandlerSearch(controlSearchResults);
     (0, _paginationViewJsDefault.default).addHandlerClick(controlPagination);
 };
@@ -1988,6 +1996,7 @@ parcelHelpers.export(exports, "state", ()=>state);
 parcelHelpers.export(exports, "loadRecipe", ()=>loadRecipe);
 parcelHelpers.export(exports, "loadSearchResults", ()=>loadSearchResults);
 parcelHelpers.export(exports, "getSearchResultsPage", ()=>getSearchResultsPage);
+parcelHelpers.export(exports, "updateServings", ()=>updateServings);
 var _regeneratorRuntime = require("regenerator-runtime"); // Importing regenerator-runtime for async/await support
 var _configJs = require("./config.js");
 var _helpersJs = require("./helpers.js");
@@ -2043,6 +2052,13 @@ const getSearchResultsPage = function(page = state.search.page) {
     const start = (page - 1) * state.search.resultsPerPage; // 0
     const end = page * state.search.resultsPerPage; // 9
     return state.search.results.slice(start, end);
+};
+const updateServings = function(newServings) {
+    state.recipe.ingredients.forEach((ing)=>{
+        // newQt = oldQt * newServings / oldServings
+        ing.quantity = ing.qunatity * newServings / state.recipe.servings;
+    });
+    state.recipe.servings = newServings; // Update the servings in the recipe state
 };
 
 },{"regenerator-runtime":"f6ot0","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT","./config.js":"2hPh4","./helpers.js":"7nL9P"}],"f6ot0":[function(require,module,exports,__globalThis) {
@@ -2714,6 +2730,14 @@ class recipeView extends (0, _viewJsDefault.default) {
             'load',
             'hashchange'
         ].forEach((ev)=>window.addEventListener(ev, handler));
+    }
+    addHandlerServings(handler) {
+        this._parentElement.addEventListener('click', function(e) {
+            const btn = e.target.closest('.btn--increase-servings');
+            if (!btn) return;
+            console.log(btn);
+            handler();
+        });
     }
     _generateMarkup() {
         return `
