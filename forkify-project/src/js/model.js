@@ -53,7 +53,6 @@ export const loadSearchResults = async function (query) {
     throw err; // Rethrow the error to be handled by the controller
   }
 };
-
 export const getSearchResultsPage = function (page = state.search.page) {
   state.search.page = page;
 

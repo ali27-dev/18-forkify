@@ -719,7 +719,7 @@ const controlSearchResults = async function() {
 const controlPagination = function(goToPage) {
     // 1) Render NEW results
     (0, _resultViewJsDefault.default).render(_modelJs.getSearchResultsPage(goToPage));
-    // 4) Render NEW pagination buttons
+    // 2) Render NEW pagination buttons
     (0, _paginationViewJsDefault.default).render(_modelJs.state.search);
 };
 const controlServings = function(newServings) {
@@ -2838,11 +2838,11 @@ var _iconsSvg = require("url:../../img/icons.svg"); // Importing icons
 var _iconsSvgDefault = parcelHelpers.interopDefault(_iconsSvg);
 class View {
     _data;
-    render(data, render = true) {
+    render(data) {
         if (!data || Array.isArray(data) && data.length === 0) return this.renderError();
         this._data = data;
         const markup = this._generateMarkup();
-        if (!render) return markup;
+        // if (!render) return markup;
         this._clear();
         this._parentElement.insertAdjacentHTML('afterbegin', markup);
     }
@@ -2876,14 +2876,14 @@ class View {
     }
     renderMessage(message = this._Message) {
         const markup = `
-        <div class="message">
-        <div>
-        <svg>
-        <use href="${(0, _iconsSvgDefault.default)}#icon-smile"></use>
+       <div class="message">
+          <div>
+          <svg>
+           <use href="${(0, _iconsSvgDefault.default)}#icon-smile"></use>
         </svg>
-        </div>
-        <p>${message}</p>
-        </div>
+       </div>
+           <p>${message}</p>
+      </div>
         `;
         this._clear();
         this._parentElement.insertAdjacentHTML('afterbegin', markup);
@@ -2958,13 +2958,21 @@ var _iconsSvg = require("url:../../img/icons.svg"); // Importing icons
 var _iconsSvgDefault = parcelHelpers.interopDefault(_iconsSvg);
 class paginationView extends (0, _viewJsDefault.default) {
     _parentElement = document.querySelector('.pagination');
+    addHandlerClick(handler) {
+        this._parentElement.addEventListener('click', function(e) {
+            const btn = e.target.closest('.btn--inline ');
+            if (!btn) return;
+            const goToPage = +btn.dataset.goto;
+            handler(goToPage);
+        });
+    }
     _generateMarkup() {
         const curPage = this._data.page;
         const numPages = Math.ceil(this._data.results.length / this._data.resultsPerPage);
         console.log(numPages);
         // Page 1, and there are other pages
         if (curPage === 1 && numPages > 1) return ` 
-          <button goto="${curPage + 1}" class="btn--inline pagination__btn--next">
+          <button data-goto="${curPage + 1}" class="btn--inline pagination__btn--next">
           <svg class="search__icon">
           <use href="${0, _iconsSvgDefault.default}#icon-arrow-right"></use>
           </svg>
@@ -2997,18 +3005,6 @@ class paginationView extends (0, _viewJsDefault.default) {
           `;
         // Page 1, and there are NO other pages
         return '';
-    }
-    addHandlerClick(handler) {
-        this._parentElement.addEventListener('click', function(e) {
-            const btn = e.target.closest('.btn--inline');
-            if (!btn) return;
-            // Get the page number from the button's data attribute
-            // Using dataset to get the goto value from the button
-            // Convert the string to a number
-            // Using + to convert the string to a number
-            const goToPage = +btn.dataset.goto;
-            handler(goToPage);
-        });
     }
 }
 exports.default = new paginationView();
