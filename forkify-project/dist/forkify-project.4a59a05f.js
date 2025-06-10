@@ -722,9 +722,9 @@ const controlPagination = function(goToPage) {
     // 4) Render NEW pagination buttons
     (0, _paginationViewJsDefault.default).render(_modelJs.state.search);
 };
-const controlServings = function() {
+const controlServings = function(newServings) {
     // Update the recipe servings (not implemented in this example)
-    _modelJs.updateServings(8); // Example: updating servings to 2
+    _modelJs.updateServings(newServings); // Example: updating servings to 2
     // Re-render the recipe view
     (0, _recipeViewJsDefault.default).render(_modelJs.state.recipe);
 };
@@ -2046,7 +2046,6 @@ const loadSearchResults = async function(query) {
         throw err; // Rethrow the error to be handled by the controller
     }
 };
-loadSearchResults('pizza');
 const getSearchResultsPage = function(page = state.search.page) {
     state.search.page = page;
     const start = (page - 1) * state.search.resultsPerPage; // 0
@@ -2056,7 +2055,7 @@ const getSearchResultsPage = function(page = state.search.page) {
 const updateServings = function(newServings) {
     state.recipe.ingredients.forEach((ing)=>{
         // newQt = oldQt * newServings / oldServings
-        ing.quantity = ing.qunatity * newServings / state.recipe.servings;
+        ing.quantity = ing.quantity * newServings / state.recipe.servings;
     });
     state.recipe.servings = newServings; // Update the servings in the recipe state
 };
@@ -2733,10 +2732,10 @@ class recipeView extends (0, _viewJsDefault.default) {
     }
     addHandlerServings(handler) {
         this._parentElement.addEventListener('click', function(e) {
-            const btn = e.target.closest('.btn--increase-servings');
+            const btn = e.target.closest('.btn--update-servings');
             if (!btn) return;
-            console.log(btn);
-            handler();
+            const { updateTo } = btn.dataset;
+            if (+updateTo > 0) handler(+updateTo);
         });
     }
     _generateMarkup() {
@@ -2764,12 +2763,12 @@ class recipeView extends (0, _viewJsDefault.default) {
                     <span class="recipe__info-text">servings</span>
         
                     <div class="recipe__info-buttons">
-                      <button class="btn--tiny btn--increase-servings">
+                      <button class="btn--tiny btn--update-servings" data-update-to=" ${this._data.servings - 1}"> 
                         <svg>
                           <use href="${0, _iconsSvgDefault.default}#icon-minus-circle"></use>
                         </svg>
                       </button>
-                      <button class="btn--tiny btn--increase-servings">
+                      <button class="btn--tiny btn--update-servings" data-update-to=" ${this._data.servings + 1}">
                         <svg>
                           <use href="${0, _iconsSvgDefault.default}#icon-plus-circle"></use>
                         </svg>
@@ -2792,7 +2791,7 @@ class recipeView extends (0, _viewJsDefault.default) {
                 <div class="recipe__ingredients">
                   <h2 class="heading--2">Recipe ingredients</h2>
                   <ul class="recipe__ingredient-list">
-                  ${this._data.ingredients.map((ing)=>this._ingredientMarkup(ing)).join('')}
+                 ${this._data.ingredients.map(this._generateMarkupIngredient).join('')}
                </div>
         
                 <div class="recipe__directions">
@@ -2809,19 +2808,19 @@ class recipeView extends (0, _viewJsDefault.default) {
                   >
                     <span>Directions</span>
                     <svg class="search__icon">
-                      <use href="src/img/icons.svg#icon-arrow-right"></use>
+                      <use href="${0, _iconsSvgDefault.default}#icon-arrow-right"></use>
                     </svg>
                   </a>
                 </div>
             `;
     }
-    _ingredientMarkup(ing) {
+    _generateMarkupIngredient(ing) {
         return `
       <li class="recipe__ingredient">
         <svg class="recipe__icon">
           <use href="${0, _iconsSvgDefault.default}#icon-check"></use>
         </svg>
-        <div class="recipe__quantity">${ing.quantity ? ing.quantity : ''}</div>
+        <div class="recipe__quantity">${ing.quantity ? ing.quantity.toString() : ''}</div>
         <div class="recipe__description">
           <span class="recipe__unit">${ing.unit}</span>
           ${ing.description}

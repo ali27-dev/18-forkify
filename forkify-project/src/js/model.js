@@ -54,8 +54,6 @@ export const loadSearchResults = async function (query) {
   }
 };
 
-loadSearchResults('pizza');
-
 export const getSearchResultsPage = function (page = state.search.page) {
   state.search.page = page;
 
@@ -68,7 +66,7 @@ export const getSearchResultsPage = function (page = state.search.page) {
 export const updateServings = function (newServings) {
   state.recipe.ingredients.forEach(ing => {
     // newQt = oldQt * newServings / oldServings
-    ing.quantity = (ing.qunatity * newServings) / state.recipe.servings;
+    ing.quantity = (ing.quantity * newServings) / state.recipe.servings;
   });
 
   state.recipe.servings = newServings; // Update the servings in the recipe state

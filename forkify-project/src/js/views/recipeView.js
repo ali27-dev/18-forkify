@@ -13,11 +13,10 @@ class recipeView extends View {
 
   addHandlerServings(handler) {
     this._parentElement.addEventListener('click', function (e) {
-      const btn = e.target.closest('.btn--increase-servings');
+      const btn = e.target.closest('.btn--update-servings');
       if (!btn) return;
-
-      console.log(btn);
-      handler();
+      const { updateTo } = btn.dataset;
+      if (+updateTo > 0) handler(+updateTo);
     });
   }
   _generateMarkup() {
@@ -51,12 +50,16 @@ class recipeView extends View {
                     <span class="recipe__info-text">servings</span>
         
                     <div class="recipe__info-buttons">
-                      <button class="btn--tiny btn--increase-servings">
+                      <button class="btn--tiny btn--update-servings" data-update-to=" ${
+                        this._data.servings - 1
+                      }"> 
                         <svg>
                           <use href="${icons}#icon-minus-circle"></use>
                         </svg>
                       </button>
-                      <button class="btn--tiny btn--increase-servings">
+                      <button class="btn--tiny btn--update-servings" data-update-to=" ${
+                        this._data.servings + 1
+                      }">
                         <svg>
                           <use href="${icons}#icon-plus-circle"></use>
                         </svg>
@@ -79,9 +82,9 @@ class recipeView extends View {
                 <div class="recipe__ingredients">
                   <h2 class="heading--2">Recipe ingredients</h2>
                   <ul class="recipe__ingredient-list">
-                  ${this._data.ingredients
-                    .map(ing => this._ingredientMarkup(ing))
-                    .join('')}
+                 ${this._data.ingredients
+                   .map(this._generateMarkupIngredient)
+                   .join('')}
                </div>
         
                 <div class="recipe__directions">
@@ -100,20 +103,22 @@ class recipeView extends View {
                   >
                     <span>Directions</span>
                     <svg class="search__icon">
-                      <use href="src/img/icons.svg#icon-arrow-right"></use>
+                      <use href="${icons}#icon-arrow-right"></use>
                     </svg>
                   </a>
                 </div>
             `;
   }
 
-  _ingredientMarkup(ing) {
+  _generateMarkupIngredient(ing) {
     return `
       <li class="recipe__ingredient">
         <svg class="recipe__icon">
           <use href="${icons}#icon-check"></use>
         </svg>
-        <div class="recipe__quantity">${ing.quantity ? ing.quantity : ''}</div>
+        <div class="recipe__quantity">${
+          ing.quantity ? ing.quantity.toString() : ''
+        }</div>
         <div class="recipe__description">
           <span class="recipe__unit">${ing.unit}</span>
           ${ing.description}
