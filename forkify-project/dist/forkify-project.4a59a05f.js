@@ -678,6 +678,8 @@ var _searchViewJs = require("./views/searchView.js");
 var _searchViewJsDefault = parcelHelpers.interopDefault(_searchViewJs);
 var _paginationViewJs = require("./views/paginationView.js");
 var _paginationViewJsDefault = parcelHelpers.interopDefault(_paginationViewJs);
+var _bookmarkViewJs = require("./views/bookmarkView.js");
+var _bookmarkViewJsDefault = parcelHelpers.interopDefault(_bookmarkViewJs);
 var _runtime = require("regenerator-runtime/runtime");
 var _regeneratorRuntime = require("regenerator-runtime");
 // import Fraction from 'fractional'; // Importing Fraction for handling fractions
@@ -691,6 +693,7 @@ const controlRecipe = async function() {
         (0, _recipeViewJsDefault.default).renderSpinner();
         // 0) Update results view to mark selected search result
         (0, _resultViewJsDefault.default).update(_modelJs.getSearchResultsPage());
+        (0, _bookmarkViewJsDefault.default).update(_modelJs.state.bookmarks);
         // 1) loading recipe
         await _modelJs.loadRecipe(id);
         // controlServings();
@@ -734,10 +737,10 @@ const controlAddBookmark = function() {
     // 1) Add/remove bookmark
     if (!_modelJs.state.recipe.bookmarked) _modelJs.addBookMark(_modelJs.state.recipe);
     else _modelJs.deleteBookMark(_modelJs.state.recipe.id);
-    console.log(_modelJs.state.recipe);
     // 2) Update recipe view
     (0, _recipeViewJsDefault.default).update(_modelJs.state.recipe);
-// 3) Render bookmarks
+    // 3) Render bookmarks
+    (0, _bookmarkViewJsDefault.default).render(_modelJs.state.bookmarks);
 // bookmarksView.render(model.state.bookmarks);
 };
 const init = function() {
@@ -749,7 +752,7 @@ const init = function() {
 };
 init();
 
-},{"core-js/modules/web.immediate.js":"bzsBv","./model.js":"3QBkH","regenerator-runtime/runtime":"f6ot0","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT","./views/recipeView.js":"3wx5k","./views/resultView.js":"2iOri","./views/searchView.js":"kbE4Z","regenerator-runtime":"f6ot0","./views/paginationView.js":"7NIiB"}],"bzsBv":[function(require,module,exports,__globalThis) {
+},{"core-js/modules/web.immediate.js":"bzsBv","./model.js":"3QBkH","regenerator-runtime/runtime":"f6ot0","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT","./views/recipeView.js":"3wx5k","./views/resultView.js":"2iOri","./views/searchView.js":"kbE4Z","regenerator-runtime":"f6ot0","./views/paginationView.js":"7NIiB","./views/bookmarkView.js":"jPLC7"}],"bzsBv":[function(require,module,exports,__globalThis) {
 'use strict';
 // TODO: Remove this module from `core-js@4` since it's split to modules listed below
 require("52e9b3eefbbce1ed");
@@ -2880,11 +2883,11 @@ var _iconsSvg = require("url:../../img/icons.svg"); // Importing icons
 var _iconsSvgDefault = parcelHelpers.interopDefault(_iconsSvg);
 class View {
     _data;
-    render(data) {
+    render(data, render = true) {
         if (!data || Array.isArray(data) && data.length === 0) return this.renderError();
         this._data = data;
         const markup = this._generateMarkup();
-        // if (!render) return markup;
+        if (!render) return markup;
         this._clear();
         this._parentElement.insertAdjacentHTML('afterbegin', markup);
     }
@@ -2958,24 +2961,39 @@ var _viewJs = require("./View.js"); // Importing the base View class
 var _viewJsDefault = parcelHelpers.interopDefault(_viewJs);
 var _iconsSvg = require("url:../../img/icons.svg"); // Importing icons
 var _iconsSvgDefault = parcelHelpers.interopDefault(_iconsSvg);
+var _previewViewJs = require("./previewView.js");
+var _previewViewJsDefault = parcelHelpers.interopDefault(_previewViewJs);
 class resultsView extends (0, _viewJsDefault.default) {
     _parentElement = document.querySelector('.results');
     _errorMessage = 'No recipes found for your query! Please try again ;)';
     _Message = '';
     _generateMarkup() {
-        return this._data.map((result)=>this._generateMarkupPreview(result)).join('');
+        console.log(this._data);
+        return this._data.map((result)=>(0, _previewViewJsDefault.default).render(result, false)).join('');
     }
-    _generateMarkupPreview(result) {
+}
+exports.default = new resultsView();
+
+},{"./View.js":"jSw21","url:../../img/icons.svg":"fd0vu","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT","./previewView.js":"6tKHS"}],"6tKHS":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _viewJs = require("./View.js"); // Importing the base View class
+var _viewJsDefault = parcelHelpers.interopDefault(_viewJs);
+var _iconsSvg = require("url:../../img/icons.svg"); // Importing icons
+var _iconsSvgDefault = parcelHelpers.interopDefault(_iconsSvg);
+class previewView extends (0, _viewJsDefault.default) {
+    _parentElement = '';
+    _generateMarkup() {
         const id = window.location.hash.slice(1);
         return `
     <li class="preview">
-            <a class="preview__link ${result.id === id ? 'preview__link--active' : ''}" href="#${result.id}">
+            <a class="preview__link ${this._data.id === id ? 'preview__link--active' : ''}" href="#${this._data.id}">
               <figure class="preview__fig">
-                <img src="${result.image}" alt="${result.title}" />
+                <img src="${this._data.image}" alt="${this._data.title}" />
               </figure>
               <div class="preview__data">
-                <h4 class="preview__title">${result.title}</h4>
-                <p class="preview__publisher">${result.publisher}</p>
+                <h4 class="preview__title">${this._data.title}</h4>
+                <p class="preview__publisher">${this._data.publisher}</p>
                
               </div>
             </a>
@@ -2983,7 +3001,7 @@ class resultsView extends (0, _viewJsDefault.default) {
           `;
     }
 }
-exports.default = new resultsView();
+exports.default = new previewView();
 
 },{"./View.js":"jSw21","url:../../img/icons.svg":"fd0vu","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"kbE4Z":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
@@ -3067,6 +3085,26 @@ class paginationView extends (0, _viewJsDefault.default) {
 }
 exports.default = new paginationView();
 
-},{"./View.js":"jSw21","url:../../img/icons.svg":"fd0vu","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}]},["5DuvQ","7dWZ8"], "7dWZ8", "parcelRequire3a11", {}, "./", "/")
+},{"./View.js":"jSw21","url:../../img/icons.svg":"fd0vu","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"jPLC7":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _viewJs = require("./View.js"); // Importing the base View class
+var _viewJsDefault = parcelHelpers.interopDefault(_viewJs);
+var _iconsSvg = require("url:../../img/icons.svg"); // Importing icons
+var _iconsSvgDefault = parcelHelpers.interopDefault(_iconsSvg);
+var _previewViewJs = require("./previewView.js");
+var _previewViewJsDefault = parcelHelpers.interopDefault(_previewViewJs);
+class bookmarkView extends (0, _viewJsDefault.default) {
+    _parentElement = document.querySelector('.bookmarks__list');
+    _errorMessage = 'No bookmarks yet. Find  nice recipw and bookmark it ;)';
+    _Message = '';
+    _generateMarkup() {
+        console.log(this._data);
+        return this._data.map((bookmark)=>(0, _previewViewJsDefault.default).render(bookmark, false)).join('');
+    }
+}
+exports.default = new bookmarkView();
+
+},{"./View.js":"jSw21","url:../../img/icons.svg":"fd0vu","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT","./previewView.js":"6tKHS"}]},["5DuvQ","7dWZ8"], "7dWZ8", "parcelRequire3a11", {}, "./", "/")
 
 //# sourceMappingURL=forkify-project.4a59a05f.js.map
