@@ -29,8 +29,8 @@ class paginationView extends View {
           }" class="btn--inline pagination__btn--next">
           <svg class="search__icon">
           <use href="${icons}#icon-arrow-right"></use>
-          </svg>
           <span>Page ${curPage + 1}</span>
+          </svg>
           </button>
       `;
     }

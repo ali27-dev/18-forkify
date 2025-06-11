@@ -16,9 +16,6 @@ export default class View {
     this._parentElement.insertAdjacentHTML('afterbegin', markup);
   }
   update(data) {
-    if (!data || (Array.isArray(data) && data.length === 0))
-      return this.renderError();
-
     this._data = data;
     const newMarkup = this._generateMarkup();
     const newDOM = document.createRange().createContextualFragment(newMarkup);
@@ -28,7 +25,6 @@ export default class View {
     newElments.forEach((newEl, i) => {
       const curEl = curElements[i];
 
-      console.log(curEl, newEl.isEqualNode(curEl));
       if (
         !newEl.isEqualNode(curEl) &&
         newEl.firstChild?.nodeValue.trim() !== ''
@@ -40,7 +36,6 @@ export default class View {
         // Update changed attributes
         Array.from(newEl.attributes).forEach(attr => {
           curEl.setAttribute(attr.name, attr.value);
-          console.log();
         });
       }
     });
