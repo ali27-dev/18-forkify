@@ -732,7 +732,8 @@ const controlServings = function(newServings) {
 };
 const controlAddBookmark = function() {
     // 1) Add/remove bookmark
-    _modelJs.addBookMark(_modelJs.state.recipe);
+    if (!_modelJs.state.recipe.bookmarked) _modelJs.addBookMark(_modelJs.state.recipe);
+    else _modelJs.deleteBookMark(_modelJs.state.recipe.id);
     console.log(_modelJs.state.recipe);
     // 2) Update recipe view
     (0, _recipeViewJsDefault.default).update(_modelJs.state.recipe);
@@ -2010,6 +2011,7 @@ parcelHelpers.export(exports, "loadSearchResults", ()=>loadSearchResults);
 parcelHelpers.export(exports, "getSearchResultsPage", ()=>getSearchResultsPage);
 parcelHelpers.export(exports, "updateServings", ()=>updateServings);
 parcelHelpers.export(exports, "addBookMark", ()=>addBookMark);
+parcelHelpers.export(exports, "deleteBookMark", ()=>deleteBookMark);
 var _regeneratorRuntime = require("regenerator-runtime"); // Importing regenerator-runtime for async/await support
 var _configJs = require("./config.js");
 var _helpersJs = require("./helpers.js");
@@ -2083,6 +2085,14 @@ const addBookMark = function(recipe) {
     state.bookmarks.push(recipe);
     // Add recipe to bookmarks
     if (recipe.id === state.recipe.id) state.recipe.bookmarked = true;
+};
+const deleteBookMark = function(id) {
+    // Delete bookmark
+    const index = state.bookmarks.findIndex((el)=>el.id === id);
+    state.bookmarks.splice(index, 1);
+    // Mark current recipe as NOT bookmarked
+    if (id === state.recipe.id) state.recipe.bookmarked = false;
+// Remove recipe from bookmarks
 };
 
 },{"regenerator-runtime":"f6ot0","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT","./config.js":"2hPh4","./helpers.js":"7nL9P"}],"f6ot0":[function(require,module,exports,__globalThis) {
