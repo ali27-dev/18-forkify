@@ -693,12 +693,13 @@ const controlRecipe = async function() {
         (0, _recipeViewJsDefault.default).renderSpinner();
         // 0) Update results view to mark selected search result
         (0, _resultViewJsDefault.default).update(_modelJs.getSearchResultsPage());
-        (0, _bookmarkViewJsDefault.default).update(_modelJs.state.bookmarks);
         // 1) loading recipe
         await _modelJs.loadRecipe(id);
-        // controlServings();
         // 2) rendering recipe
         (0, _recipeViewJsDefault.default).render(_modelJs.state.recipe);
+        //  3) Updating bookmarks view
+        (0, _bookmarkViewJsDefault.default).update(_modelJs.state.bookmarks);
+    // controlServings();
     } catch (error) {
         (0, _recipeViewJsDefault.default).renderError();
     }
@@ -743,12 +744,16 @@ const controlAddBookmark = function() {
     (0, _bookmarkViewJsDefault.default).render(_modelJs.state.bookmarks);
 // bookmarksView.render(model.state.bookmarks);
 };
+const controlBookMark = function() {
+    (0, _bookmarkViewJsDefault.default).render(_modelJs.state.bookmarks);
+};
 const init = function() {
     (0, _recipeViewJsDefault.default).addHandlerRender(controlRecipe);
     (0, _recipeViewJsDefault.default).addHandlerServings(controlServings);
     (0, _searchViewJsDefault.default).addHandlerSearch(controlSearchResults);
     (0, _paginationViewJsDefault.default).addHandlerClick(controlPagination);
     (0, _recipeViewJsDefault.default).addHandlerAddBookmark(controlAddBookmark);
+    (0, _bookmarkViewJsDefault.default).addHandlerRender(controlBookMark);
 };
 init();
 
@@ -2013,6 +2018,7 @@ parcelHelpers.export(exports, "loadRecipe", ()=>loadRecipe);
 parcelHelpers.export(exports, "loadSearchResults", ()=>loadSearchResults);
 parcelHelpers.export(exports, "getSearchResultsPage", ()=>getSearchResultsPage);
 parcelHelpers.export(exports, "updateServings", ()=>updateServings);
+parcelHelpers.export(exports, "presistBookmMark", ()=>presistBookmMark);
 parcelHelpers.export(exports, "addBookMark", ()=>addBookMark);
 parcelHelpers.export(exports, "deleteBookMark", ()=>deleteBookMark);
 var _regeneratorRuntime = require("regenerator-runtime"); // Importing regenerator-runtime for async/await support
@@ -2083,11 +2089,15 @@ const updateServings = function(newServings) {
     });
     state.recipe.servings = newServings; // Update the servings in the recipe state
 };
+const presistBookmMark = function() {
+    localStorage.setItem('bookmarks', JSON.stringify(state.bookmarks));
+};
 const addBookMark = function(recipe) {
     // Add bookmark
     state.bookmarks.push(recipe);
     // Add recipe to bookmarks
     if (recipe.id === state.recipe.id) state.recipe.bookmarked = true;
+    presistBookmMark();
 };
 const deleteBookMark = function(id) {
     // Delete bookmark
@@ -2095,8 +2105,14 @@ const deleteBookMark = function(id) {
     state.bookmarks.splice(index, 1);
     // Mark current recipe as NOT bookmarked
     if (id === state.recipe.id) state.recipe.bookmarked = false;
-// Remove recipe from bookmarks
+    // Remove recipe from bookmarks
+    presistBookmMark();
 };
+const init = function() {
+    const storage = localStorage.getItem('bookmarks');
+    if (storage) state.bookmarks = JSON.parse(storage);
+};
+init();
 
 },{"regenerator-runtime":"f6ot0","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT","./config.js":"2hPh4","./helpers.js":"7nL9P"}],"f6ot0":[function(require,module,exports,__globalThis) {
 /**
@@ -3098,6 +3114,9 @@ class bookmarkView extends (0, _viewJsDefault.default) {
     _parentElement = document.querySelector('.bookmarks__list');
     _errorMessage = 'No bookmarks yet. Find  nice recipw and bookmark it ;)';
     _Message = '';
+    addHandlerRender(handler) {
+        window.addEventListener('load', handler);
+    }
     _generateMarkup() {
         console.log(this._data);
         return this._data.map((bookmark)=>(0, _previewViewJsDefault.default).render(bookmark, false)).join('');

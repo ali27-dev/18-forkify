@@ -22,17 +22,18 @@ const controlRecipe = async function () {
     if (!id) return;
 
     recipeView.renderSpinner();
-
     // 0) Update results view to mark selected search result
     resultsView.update(model.getSearchResultsPage());
-    bookmarkView.update(model.state.bookmarks);
-
     // 1) loading recipe
     await model.loadRecipe(id);
 
-    // controlServings();
     // 2) rendering recipe
     recipeView.render(model.state.recipe);
+
+    //  3) Updating bookmarks view
+    bookmarkView.update(model.state.bookmarks);
+
+    // controlServings();
   } catch (error) {
     recipeView.renderError();
   }
@@ -88,11 +89,16 @@ const controlAddBookmark = function () {
   // bookmarksView.render(model.state.bookmarks);
 };
 
+const controlBookMark = function () {
+  bookmarkView.render(model.state.bookmarks);
+};
+
 const init = function () {
   recipeView.addHandlerRender(controlRecipe);
   recipeView.addHandlerServings(controlServings);
   searchView.addHandlerSearch(controlSearchResults);
   paginationView.addHandlerClick(controlPagination);
   recipeView.addHandlerAddBookmark(controlAddBookmark);
+  bookmarkView.addHandlerRender(controlBookMark);
 };
 init();
