@@ -1,11 +1,11 @@
-import View from './View.js'; // Importing the base View class
-import icons from 'url:../../img/icons.svg'; // Importing icons
+import View from './View.js';
+import icons from 'url:../../img/icons.svg'; // Parcel 2
 
-class addRecipeView extends View {
+class AddRecipeView extends View {
   _parentElement = document.querySelector('.upload');
-  _Message = 'Recipe are successfuly uploaded :)';
+  _message = 'Recipe was successfully uploaded :)';
 
-  _window = document.querySelector('.add-recipe-window ');
+  _window = document.querySelector('.add-recipe-window');
   _overlay = document.querySelector('.overlay');
   _btnOpen = document.querySelector('.nav__btn--add-recipe');
   _btnClose = document.querySelector('.btn--close-modal');
@@ -14,7 +14,6 @@ class addRecipeView extends View {
     super();
     this._addHandlerShowWindow();
     this._addHandlerHideWindow();
-    // this._addHandlerUploadeWindow();
   }
 
   toggleWindow() {
@@ -32,7 +31,7 @@ class addRecipeView extends View {
     this._overlay.addEventListener('click', this.toggleWindow.bind(this));
   }
 
-  addHandlerUploadeWindow(handler) {
+  addHandlerUpload(handler) {
     this._parentElement.addEventListener('submit', function (e) {
       e.preventDefault();
 
@@ -45,4 +44,4 @@ class addRecipeView extends View {
   _generateMarkup() {}
 }
 
-export default new addRecipeView();
+export default new AddRecipeView();
